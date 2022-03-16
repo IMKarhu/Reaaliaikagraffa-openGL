@@ -8,7 +8,12 @@
 #include "camera.h"			// Include Camera-class.
 #include "teapot.h"			// Include Teapot-class.
 #include "texture.h"		// Include Texture-class.
-#include "mesh.h"			// Include Mesh-class.
+#include "mesh.h"	
+#include <assimp/Importer.hpp>
+#include <assimp/postprocess.h>
+#include <assimp/scene.h>
+#include <assimp/DefaultLogger.hpp>
+#include <assimp/LogStream.hpp>// Include Mesh-class.
 // Include STB-image library
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
@@ -54,7 +59,8 @@ Mesh* processMesh(aiMesh* mesh)
 			indices.push_back(face.mIndices[j]);
 		}
 	}
-	//TODO 3: return with new Mesh of our own
+	
+	return new Mesh(vertices, indices);//TODO 3: return with new Mesh of our own
 }
 void processNode(std::vector<Mesh*>* meshes, aiNode* node, const aiScene* scene)
 {
@@ -75,7 +81,7 @@ void processNode(std::vector<Mesh*>* meshes, aiNode* node, const aiScene* scene)
 
 std::vector<Mesh*> loadMeshes(const std::string& path)
 {
-	//TODO 1: create the container that will be returned by this function
+	std::vector<Mesh*> meshes;//TODO 1: create the container that will be returned by this function
 	//read file with Assimp
 	Assimp::Importer importer;
 	const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
@@ -88,6 +94,7 @@ std::vector<Mesh*> loadMeshes(const std::string& path)
 	// retrieve the directory path of the filepath
 	std::string dir = path.substr(0, path.find_last_of('/'));
 	//TODO 2: process Assimp's root node recursively
+	processNode(&meshes, scene->mRootNode, scene);
 	return meshes;
 }
 
@@ -160,6 +167,23 @@ public:
 		m_camera->setPosition(glm::vec3(0.0f, 0.4f, 0.4f));
 		m_camera->setLookAt(glm::vec3(0.0f, 0.0f, -0.5f));
 
+		auto meshes = loadMeshes("../torus.obj");
+		m_meshes.push_back(meshes[0]);
+		m_meshes[0]->setScaling(glm::vec3(0.005f));
+		m_meshes[0]->setPosition(glm::vec3(-0.5f, 0.0f, 0.0f));
+		meshes = loadMeshes("../torusknot.obj");
+		m_meshes.push_back(meshes[0]);
+		m_meshes[1]->setScaling(glm::vec3(0.02f));
+		m_meshes[1]->setPosition(glm::vec3(-0.5f, 0.0f, -1.0f));
+		meshes = loadMeshes("../suzanne.obj");
+		m_meshes.push_back(meshes[0]);
+		m_meshes[2]->setScaling(glm::vec3(0.03f));
+		m_meshes[2]->setPosition(glm::vec3(0.5f, 0.0f, 0.0f));
+		meshes = loadMeshes("../cylinder.obj");
+		m_meshes.push_back(meshes[0]);
+		m_meshes[3]->setScaling(glm::vec3(0.03f));
+		m_meshes[3]->setPosition(glm::vec3(0.5f, 0.0f, -1.0f));
+
 		/*auto teapot = new Teapot();
 		teapot->setPosition(glm::vec3(-0.5, 0.0, 0.0));
 		m_teapots.push_back(teapot);
@@ -173,7 +197,7 @@ public:
 		teapot->setPosition(glm::vec3(0.5, 0.0, -1.0));
 		m_teapots.push_back(teapot);*/
 		//m_teapot = new Teapot();
-		m_teapots.push_back(new Teapot());
+		/*m_teapots.push_back(new Teapot());
 		m_teapots.push_back(new Teapot());
 		m_teapots.push_back(new Teapot());
 		m_teapots.push_back(new Teapot());
@@ -181,7 +205,7 @@ public:
 		m_teapots[0]->setPosition(glm::vec3(-0.5, 0.0, 0.0));
 		m_teapots[1]->setPosition(glm::vec3(-0.5, 0.0, -1.0));
 		m_teapots[2]->setPosition(glm::vec3(0.5, 0.0, 0.0));
-		m_teapots[3]->setPosition(glm::vec3(0.5, 0.0, -1.0));
+		m_teapots[3]->setPosition(glm::vec3(0.5, 0.0, -1.0));*/
 		
 	
 		// Load the data for our texture using stb-image stbi_load-function
@@ -192,7 +216,7 @@ public:
 		m_texture = new Texture(width, height, nrChannels, data);
 
 		// Enable depth buffering
-		glEnable(GL_DEPTH_TEST);
+		//glEnable(GL_DEPTH_TEST);
 		//glDepthFunc(GL_LEQUAL);
 		//glEnable(GL_CULL_FACE);
 		
@@ -214,7 +238,7 @@ public:
 		m_shader = 0;
 
 		// Delete teapot
-		for (auto teapot : m_teapots)
+		for (auto teapot : m_meshes)
 		{
 			delete teapot;
 		}
@@ -244,9 +268,9 @@ public:
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		checkGLError();
 		glm::vec3 lightPos = glm::vec3(0.0f, 1.0f, 0.0f);
-		for (auto teapot : m_teapots)
+		for (auto meshes : m_meshes)
 		{
-			teapot->render(m_shader, m_camera->getPosition(), m_camera->getModelMatrix(), m_camera->getProjectionMatrix(), m_texture->getTextureId());
+			meshes->render(m_shader, m_camera->getPosition(), m_camera->getModelMatrix(), m_camera->getProjectionMatrix(), m_texture->getTextureId());
 		}
 		
 	}
@@ -261,6 +285,7 @@ private:
 	Teapot*						m_teapot;		// Teapot
 	Texture*					m_texture;
 	std::vector<Teapot*> m_teapots;
+	std::vector<Mesh*> m_meshes;
 };
 
 // Global pointer to the application

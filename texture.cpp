@@ -5,6 +5,7 @@ Texture::Texture(int width, int height, int nrChannels, const GLubyte* data) : O
 	// Create texture
 	glGenTextures(1, &m_textureId);
 	checkGLError();
+	//1st texture
 	// Bind it for use
 	glBindTexture(GL_TEXTURE_2D, m_textureId);
 	checkGLError();

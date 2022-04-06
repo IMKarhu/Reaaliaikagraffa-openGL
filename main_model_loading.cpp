@@ -14,9 +14,19 @@
 #include <assimp/scene.h>
 #include <assimp/DefaultLogger.hpp>
 #include <assimp/LogStream.hpp>// Include Mesh-class.
+#include <iostream>
 // Include STB-image library
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
+
+
+
+const unsigned int SCR_WIDTH = 720;
+const unsigned int SCR_HEIGHT = 480;
+
+float lastX = SCR_WIDTH / 2.0f;
+float lastY = SCR_HEIGHT / 2.0f;
+bool firstMouse = true;
 
 Mesh* processMesh(aiMesh* mesh)
 {
@@ -163,9 +173,9 @@ public:
 
 		// Create ortho-projective camera with screen size 640x480
 		m_camera = new Camera();
-		// Set camera transform (view transform)
+		//// Set camera transform (view transform)
 		m_camera->setPosition(glm::vec3(0.0f, 0.4f, 0.4f));
-		m_camera->setLookAt(glm::vec3(0.0f, 0.0f, -0.5f));
+		//m_camera->setLookAt();
 
 		auto meshes = loadMeshes("../torus.obj");
 		m_meshes.push_back(meshes[0]);
@@ -183,53 +193,30 @@ public:
 		m_meshes.push_back(meshes[0]);
 		m_meshes[3]->setScaling(glm::vec3(0.03f));
 		m_meshes[3]->setPosition(glm::vec3(0.5f, 0.0f, -1.0f));
-
-		/*auto teapot = new Teapot();
-		teapot->setPosition(glm::vec3(-0.5, 0.0, 0.0));
-		m_teapots.push_back(teapot);
-		 teapot = new Teapot();
-		teapot->setPosition(glm::vec3(-0.5, 0.0, -1.0));
-		m_teapots.push_back(teapot);
-		 teapot = new Teapot();
-		teapot->setPosition(glm::vec3(0.5, 0.0, 0.0));
-		m_teapots.push_back(teapot);
-		 teapot = new Teapot();
-		teapot->setPosition(glm::vec3(0.5, 0.0, -1.0));
-		m_teapots.push_back(teapot);*/
-		//m_teapot = new Teapot();
-		/*m_teapots.push_back(new Teapot());
-		m_teapots.push_back(new Teapot());
-		m_teapots.push_back(new Teapot());
-		m_teapots.push_back(new Teapot());
-
-		m_teapots[0]->setPosition(glm::vec3(-0.5, 0.0, 0.0));
-		m_teapots[1]->setPosition(glm::vec3(-0.5, 0.0, -1.0));
-		m_teapots[2]->setPosition(glm::vec3(0.5, 0.0, 0.0));
-		m_teapots[3]->setPosition(glm::vec3(0.5, 0.0, -1.0));*/
-		
+		meshes = loadMeshes("../Cube.obj");
+		m_meshes.push_back(meshes[0]);
+		m_meshes[4]->setScaling(glm::vec3(1.0f));
+		m_meshes[4]->setPosition(glm::vec3(0.0f, -1.0f, 0.0f));
 	
 		// Load the data for our texture using stb-image stbi_load-function
 		int width, height, nrChannels;
-		GLubyte* data = stbi_load("checkerboard.png", &width, &height, &nrChannels, 0);
+		GLubyte* data = stbi_load("fabric_pattern_07_col_1_2k.png", &width, &height, &nrChannels, 0);
+		m_textures.push_back(new Texture(width, height, nrChannels, data));
+		 data = stbi_load("Wood_table_1k.png", &width, &height, &nrChannels, 0);
+		 m_textures.push_back(new Texture(width, height, nrChannels, data));
+		 data = stbi_load("Wood_table_2k.png", &width, &height, &nrChannels, 0);
+		 m_textures.push_back(new Texture(width, height, nrChannels, data));
+		 data = stbi_load("red_bricks_04_diff_2k.png", &width, &height, &nrChannels, 0);
+		 m_textures.push_back(new Texture(width, height, nrChannels, data));
+		 data = stbi_load("Ground.png", &width, &height, &nrChannels, 0);
+		 m_textures.push_back(new Texture(width, height, nrChannels, data));
+		
 
-		// Create texture
-		m_texture = new Texture(width, height, nrChannels, data);
 
 		// Enable depth buffering
-		//glEnable(GL_DEPTH_TEST);
-		//glDepthFunc(GL_LEQUAL);
-		//glEnable(GL_CULL_FACE);
+		glEnable(GL_DEPTH_TEST);
+
 		
-		// TODO: Try out different culling options
-		//glCullFace(GL_BACK);
-		//glCullFace(GL_FRONT);
-		//glCullFace(GL_FRONT_AND_BACK);
-		//glFrontFace(GL_CCW);
-		// Answer here (voi vastata suomeksi): What kind of differences do you see compared to rendering without culling enabled?
-		// Cullface leikkaa joko etuosan tai takaosan, front_and_back leikkaa kaiken muun paitsi ‰‰rirajat?
-		//
-		//
-		//
 	}
 
 	~Application() {
@@ -237,20 +224,58 @@ public:
 		delete m_shader;
 		m_shader = 0;
 
+		// Delete Camera
+		delete m_camera;
+		m_camera = 0;
+
 		// Delete teapot
 		for (auto teapot : m_meshes)
 		{
 			delete teapot;
 		}
 		
+		//delete textures
+		for (auto texture : m_textures)
+		{
+			delete texture;
+		}
+	}
 
-		// Delete Camera
-		delete m_camera;
-		m_camera = 0;
+	void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
+	{
+		float xpos = static_cast<float>(xposIn);
+		float ypos = static_cast<float>(yposIn);
 
-		// Delete texture
-		delete m_texture;
-		m_texture = 0;
+		if (firstMouse)
+		{
+			lastX = xpos;
+			lastY = ypos;
+			firstMouse = false;
+		}
+
+		float xoffset = xpos - lastX;
+		float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
+
+		lastX = xpos;
+		lastY = ypos;
+
+		m_camera->ProcessMouseMovement(xoffset, yoffset);
+	}
+
+	void processInput(GLFWwindow *window)
+	{
+		float deltaTime = 0.0f;
+		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+		{
+			m_camera->processKeyboard(FORWARD);
+			printf("W pressed\n");
+		}
+		if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+			m_camera->processKeyboard(BACKWARD);
+		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+			m_camera->processKeyboard(LEFT);
+		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+			m_camera->processKeyboard(RIGHT);
 	}
 
 	void render(GLFWwindow* window) {
@@ -268,28 +293,48 @@ public:
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		checkGLError();
 		glm::vec3 lightPos = glm::vec3(0.0f, 1.0f, 0.0f);
-		for (auto meshes : m_meshes)
-		{
-			meshes->render(m_shader, m_camera->getPosition(), m_camera->getModelMatrix(), m_camera->getProjectionMatrix(), m_texture->getTextureId());
-		}
+		
+			m_meshes[0]->render(m_shader, m_camera->getPosition(), m_camera->getModelMatrix(), m_camera->getProjectionMatrix(), m_textures[0]->getTextureId());
+			m_meshes[1]->render(m_shader, m_camera->getPosition(), m_camera->getModelMatrix(), m_camera->getProjectionMatrix(), m_textures[1]->getTextureId());
+			m_meshes[2]->render(m_shader, m_camera->getPosition(), m_camera->getModelMatrix(), m_camera->getProjectionMatrix(), m_textures[2]->getTextureId());
+			m_meshes[3]->render(m_shader, m_camera->getPosition(), m_camera->getModelMatrix(), m_camera->getProjectionMatrix(), m_textures[3]->getTextureId());
+			m_meshes[4]->render(m_shader, m_camera->getPosition(), m_camera->getModelMatrix(), m_camera->getProjectionMatrix(), m_textures[4]->getTextureId());
+		
 		
 	}
 
 	void update(float deltaTime) {
 		//m_teapot->setRotationZ(m_teapot->getRotationZ() + deltaTime);
+		
 	}
 
 private:
 	Shader*						m_shader;		// Pointer to the Shader object
 	Camera*         			m_camera;		// Camera.
 	Teapot*						m_teapot;		// Teapot
-	Texture*					m_texture;
+	std::vector<Texture*> m_textures;
 	std::vector<Teapot*> m_teapots;
 	std::vector<Mesh*> m_meshes;
 };
 
+
 // Global pointer to the application
 Application* g_app = 0;
+
+void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
+{
+	g_app->mouse_callback(window, xposIn, yposIn);
+}
+void processInput(GLFWwindow* window)
+{
+	g_app->processInput(window);
+}
+void updateallInputs(float deltaTime)
+{
+	g_app->update(deltaTime);
+
+}
+
 
 int main(void) {
 	// Set c++-lambda as error call back function for glfw.
@@ -303,11 +348,13 @@ int main(void) {
 	}
 
 	// Create window and check that creation was succesful.
-	GLFWwindow* window = glfwCreateWindow(640, 480, "OpenGL window", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(720, 480, "OpenGL window", NULL, NULL);
 	if (!window) {
 		glfwTerminate();
 		return -1;
 	}
+
+	
 
 	// Set current context
 	glfwMakeContextCurrent(window);
@@ -316,7 +363,7 @@ int main(void) {
 
 	// Create application
 	g_app = new Application();
-
+	glfwSetCursorPosCallback(window, mouse_callback);
 	// Specify the key callback as c++-lambda to glfw
 	glfwSetKeyCallback(window, [](GLFWwindow* window, int key, int scancode, int action, int mods) {
 		// Close window if escape is pressed by the user.
@@ -324,10 +371,11 @@ int main(void) {
 			glfwSetWindowShouldClose(window, GLFW_TRUE);
 		}
 	});
-
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	// Get time using glfwGetTime-function, for delta time calculation.
 	float prevTime = (float)glfwGetTime();
 	while (!glfwWindowShouldClose(window)) {
+		
 		// Render the game frame and swap OpenGL back buffer to be as front buffer.
 		g_app->render(window);
 		glfwSwapBuffers(window);
@@ -339,7 +387,9 @@ int main(void) {
 		float curTime = (float)glfwGetTime();
 		float deltaTime = curTime - prevTime;
 		prevTime = curTime;
+		processInput(window);
 		g_app->update(deltaTime);
+		
 	}
 
 	// Delete application
@@ -354,3 +404,8 @@ int main(void) {
 
 	return 0;
 }
+
+
+
+
+

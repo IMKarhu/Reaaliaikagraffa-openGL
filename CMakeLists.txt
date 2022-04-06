@@ -28,10 +28,12 @@ add_executable(simple_teapot main_simple_teapot.cpp shader.h shader.cpp gameobje
 add_executable(projection main_projection.cpp shader.h shader.cpp gameobject.h gameobject.cpp camera.h texture.h texture.cpp teapot.h teapot.cpp teapot_data.h ${GLAD_GL})
 add_executable(lightning main_lightning.cpp shader.h shader.cpp gameobject.h gameobject.cpp camera.h texture.h texture.cpp teapot.h teapot.cpp teapot_data.h ${GLAD_GL})
 add_executable( model_loading main_model_loading.cpp mesh.cpp mesh.h shader.h shader.cpp gameobject.h gameobject.cpp camera.h texture.h texture.cpp teapot.h teapot.cpp teapot_data.h ${GLAD_GL})
+add_executable( practical_work main_model_loading.cpp mesh.cpp mesh.h shader.h shader.cpp gameobject.h gameobject.cpp camera.h texture.h texture.cpp teapot.h teapot.cpp teapot_data.h ${GLAD_GL})
 # Link game_object-executables with needed libraries. Since the kgfw and glfw libraries 
 # has public include directories we will use those link directories when building binaries.
 target_link_libraries(simple_teapot PUBLIC kgfw PUBLIC glfw PUBLIC glm)
 target_link_libraries(projection PUBLIC kgfw PUBLIC glfw PUBLIC glm)
 target_link_libraries(lightning PUBLIC kgfw PUBLIC glfw PUBLIC glm)
 target_link_libraries(model_loading PUBLIC kgfw PUBLIC glfw PUBLIC glm PUBLIC assimp)
+target_link_libraries(practical_work PUBLIC kgfw PUBLIC glfw PUBLIC glm PUBLIC assimp)
 

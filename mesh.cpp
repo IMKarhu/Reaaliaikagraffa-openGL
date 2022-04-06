@@ -47,7 +47,7 @@ void Mesh::render(Shader* shader, glm::vec3 viewPos, const glm::mat4& viewMatrix
 	shader->setUniform("M", getModelMatrix());
 
 	// lightPos vector
-	//shader->setUniform("lightPos", lightPos.x, lightPos.y, lightPos.z);
+	shader->setUniform("lightPos", 0.0f,1.0f,0.0f);
 
 	// lightPos vector
 	shader->setUniform("viewPos", viewPos.x, viewPos.y, viewPos.z);

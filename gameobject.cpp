@@ -83,12 +83,12 @@ glm::mat4 GameObject::getModelMatrix() const {
     return glm::translate(glm::mat4(1.0f), m_position)
 			* m_oritentation
             * glm::rotate(m_angleInRadians.x, glm::vec3(1.0f, 0.0f, 0.0f))
-            * glm::rotate(m_angleInRadians.y, glm::vec3(0.0f, 1.0f, 0.0f))
+            * glm::rotate(m_angleInRadians.y, glm::vec3(0.0f, -1.0f, 0.0f))
             * glm::rotate(m_angleInRadians.z, glm::vec3(0.0f, 0.0f, 1.0f))
             * glm::scale(glm::mat4(1.0f), m_scale);
 }
 
 void GameObject::setLookAt() {
-	m_oritentation = glm::inverse(glm::lookAtRH(getPosition(),getPosition() + getFront(), getWorldUp()));
+	m_oritentation = glm::inverse(glm::lookAtRH(m_position,m_position + m_to, m_up));
 }
 

@@ -175,7 +175,7 @@ public:
 		m_camera = new Camera();
 		//// Set camera transform (view transform)
 		m_camera->setPosition(glm::vec3(0.0f, 0.4f, 0.4f));
-		//m_camera->setLookAt();
+		m_camera->setLookAt();
 
 		auto meshes = loadMeshes("../torus.obj");
 		m_meshes.push_back(meshes[0]);

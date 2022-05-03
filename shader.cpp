@@ -2,13 +2,53 @@
 #include <stdio.h>			// Include stdio.h, which contains printf-function
 #include <kgfw/GLUtils.h>	// Include GLUtils for checkGLError
 
-Shader::Shader(const char* const vertexShaderString, const char* const fragmentShaderString) 
+Shader::Shader(const char* vertexShaderPath, const char* fragmentShaderPath) 
 	: Object(__FUNCTION__)
 	, m_shaderProgram(0) {
+	//std::string vertexCode;
+	//std::string fragmentCode;
+	//std::ifstream vShaderFile;
+	//std::ifstream fShaderFile;
+
+	////ifstream objects can throw exceptions
+	//vShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+	//fShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+	//try
+	//{
+	//	//open files
+	//	vShaderFile.open(vertexShaderPath);
+	//	fShaderFile.open(fragmentShaderPath);
+
+	//	//read file's buffer contents into streams
+	//	std::stringstream vShaderStream, fShaderStream;
+	//	vShaderStream << vShaderFile.rdbuf();
+	//	fShaderStream << fShaderFile.rdbuf();
+
+	//	//close file handlers
+	//	vShaderFile.close();
+	//	fShaderFile.close();
+
+	//	//convert stream into string
+	//	vertexCode = vShaderStream.str();
+	//	fragmentCode = fShaderStream.str();
+	//}
+	//catch (std::ifstream::failure& e)
+	//{
+	//	std::cout << "ERROR SHADER FILE NOT SUCCESFULLY READ" << std::endl;
+	//}
+
+	//const char* vShaderCode = vertexCode.c_str();
+	//const char* fShaderCode = fragmentCode.c_str();
+	/*std::string vertShaderSource = readFile(vertexShaderPath);
+	std::string fragShaderSource = readFile(fragmentShaderPath);
+
+	const char* vertShadersrc = vertShaderSource.c_str();
+	const char* fragShadersrc = fragShaderSource.c_str();*/
+
 	// Create and compile vertex shader
 	int vertexShader = glCreateShader(GL_VERTEX_SHADER);
 	checkGLError();
-	glShaderSource(vertexShader, 1, &vertexShaderString, NULL);
+	glShaderSource(vertexShader, 1, &vertexShaderPath, NULL);
 	checkGLError();
 	glCompileShader(vertexShader);
 	checkGLError();
@@ -28,7 +68,7 @@ Shader::Shader(const char* const vertexShaderString, const char* const fragmentS
 	// Create and compile fragment shader
 	int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
 	checkGLError();
-	glShaderSource(fragmentShader, 1, &fragmentShaderString, NULL);
+	glShaderSource(fragmentShader, 1, &fragmentShaderPath, NULL);
 	checkGLError();
 	glCompileShader(fragmentShader);
 	checkGLError();
@@ -77,6 +117,26 @@ Shader::~Shader() {
 void Shader::bind() {
 	glUseProgram(m_shaderProgram);
 	checkGLError();
+}
+
+std::string Shader::readFile(const char *filePath)
+{
+	std::string content;
+	std::ifstream filestream(filePath, std::ios::in);
+
+	if (!filestream.is_open())
+	{
+		std::cerr << "could not read file " << filePath << ". File does not exist." << std::endl;
+		return "";
+	}
+	std::string line = "";
+	while (!filestream.eof())
+	{
+		std::getline(filestream, line);
+		content.append(line + "\n");
+	}
+	filestream.close();
+	return content;
 }
 
 

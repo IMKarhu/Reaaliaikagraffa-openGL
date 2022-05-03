@@ -3,13 +3,19 @@
 #include <glad/gl.h>		// Include glad
 #include <string>           // Inlude std::string
 #include <glm/glm.hpp>      // Include glm
+#include <string>
+#include <fstream>
+#include <sstream>
+#include <iostream>
 
 class Shader : public kgfw::Object {
 public:
-	Shader(const char* const vertexShaderString, const char* const fragmentShaderString);
+	Shader(const char* vertexShaderPath, const char* fragmentShaderPath);
 	~Shader();
 
 	void bind();
+
+	std::string readFile(const char *filePath);
 
 	void setUniform(const std::string& name, float x, float y, float z);
 	void setUniform(const std::string& name, float x, float y, float z, float w);

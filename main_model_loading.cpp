@@ -244,7 +244,7 @@ public:
 	void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
 	{
 		float xpos = static_cast<float>(xposIn);
-		float ypos = static_cast<float>(yposIn);
+		float ypos = static_cast<float>(yposIn);;
 
 		if (firstMouse)
 		{
@@ -262,20 +262,30 @@ public:
 		m_camera->ProcessMouseMovement(xoffset, yoffset);
 	}
 
-	void processInput(GLFWwindow *window)
+	void processInput(GLFWwindow *window, float deltaTime)
 	{
-		float deltaTime = 0.0f;
+		
 		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 		{
-			m_camera->processKeyboard(FORWARD);
+			m_camera->processKeyboard(FORWARD, deltaTime);
 			printf("W pressed\n");
 		}
 		if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-			m_camera->processKeyboard(BACKWARD);
+		{
+			m_camera->processKeyboard(BACKWARD, deltaTime);
+			printf("S pressed\n");
+		}
 		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-			m_camera->processKeyboard(LEFT);
+		{
+			m_camera->processKeyboard(LEFT, deltaTime);
+			printf("A pressed\n");
+		}
 		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-			m_camera->processKeyboard(RIGHT);
+		{
+			m_camera->processKeyboard(RIGHT, deltaTime);
+			printf("D pressed\n");
+		}
+		
 	}
 
 	void render(GLFWwindow* window) {
@@ -325,9 +335,9 @@ void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
 {
 	g_app->mouse_callback(window, xposIn, yposIn);
 }
-void processInput(GLFWwindow* window)
+void processInput(GLFWwindow* window, float deltaTime)
 {
-	g_app->processInput(window);
+	g_app->processInput(window, deltaTime);
 }
 void updateallInputs(float deltaTime)
 {
@@ -387,7 +397,7 @@ int main(void) {
 		float curTime = (float)glfwGetTime();
 		float deltaTime = curTime - prevTime;
 		prevTime = curTime;
-		processInput(window);
+		g_app->processInput(window, deltaTime);
 		g_app->update(deltaTime);
 		
 	}

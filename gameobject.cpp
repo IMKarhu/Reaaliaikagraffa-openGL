@@ -18,14 +18,20 @@ void GameObject::setPosition(const glm::vec3& position) {
     m_position = position;
 }
 
-void GameObject::setRotationy(float angleInRadians) {
-    m_angleInRadians.y = angleInRadians;
+void GameObject::setRotationy(const float angleInRadians) {
+   m_angleInRadians.y = angleInRadians;
 }
 
-void GameObject::setRotationx(float angleInRadians)
+void GameObject::setRotationx(const float angleInRadians)
 {
-    m_angleInRadians.x = angleInRadians;
+   m_angleInRadians.x = angleInRadians;
 }
+
+void GameObject::setRotationz(const float angleInRadians)
+{
+   m_angleInRadians.z = angleInRadians;
+}
+
 
 void GameObject::setScaling(const glm::vec3& scale) {
     m_scale = scale;
@@ -54,6 +60,11 @@ float GameObject::getRotationx() const
     return m_angleInRadians.x;
 }
 
+float GameObject::getRotationz() const
+{
+    return m_angleInRadians.z;
+}
+
 const glm::vec3& GameObject::getScaling() const {
     return m_scale;
 }
@@ -71,25 +82,13 @@ glm::vec3& GameObject::getWorldUp()
 glm::mat4 GameObject::getModelMatrix() const {
     return glm::translate(glm::mat4(1.0f), m_position)
 			* m_oritentation
-            * glm::rotate(m_angleInRadians.y, glm::vec3(0.0f, -1.0f, 0.0f))
             * glm::rotate(m_angleInRadians.x, glm::vec3(1.0f, 0.0f, 0.0f))
+            * glm::rotate(m_angleInRadians.y, glm::vec3(0.0f, 1.0f, 0.0f))
+            * glm::rotate(m_angleInRadians.z, glm::vec3(0.0f, 0.0f, 1.0f))
             * glm::scale(glm::mat4(1.0f), m_scale);
 }
 
 void GameObject::setLookAt() {
 	m_oritentation = glm::inverse(glm::lookAtRH(getPosition(),getPosition() + getFront(), getWorldUp()));
 }
-
-//void GameObject::processInput(GLFWwindow* window)
-//{
-//    const float cameraSpeed = 0.05f;
-//    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-//        getPosition() += cameraSpeed * ;
-//    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-//        cameraPos -= cameraSpeed * cameraFront;
-//    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-//        cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
-//    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-//        cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
-//}
 

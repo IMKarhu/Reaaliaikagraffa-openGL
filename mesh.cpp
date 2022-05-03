@@ -41,7 +41,7 @@ void Mesh::render(Shader* shader, glm::vec3 viewPos, const glm::mat4& viewMatrix
 	// Set uniform values to the shader
 
 	// MVP Matrix
-	shader->setUniform("MVP", projectionMatrix * glm::inverse(viewMatrix) * getModelMatrix());
+	shader->setUniform("MVP", projectionMatrix * inverse(viewMatrix) * getModelMatrix());
 
 	// Model matrix
 	shader->setUniform("M", getModelMatrix());

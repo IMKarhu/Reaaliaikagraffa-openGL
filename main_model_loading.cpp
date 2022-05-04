@@ -22,7 +22,7 @@
 
 
 const unsigned int SCR_WIDTH = 720;
-const unsigned int SCR_HEIGHT = 480;
+const unsigned int SCR_HEIGHT = 600;
 
 float lastX = SCR_WIDTH / 2.0f;
 float lastY = SCR_HEIGHT / 2.0f;
@@ -172,10 +172,10 @@ public:
 		m_shader = new Shader(vertexShaderSource, fragmentShaderSource);
 
 		// Create ortho-projective camera with screen size 640x480
-		m_camera = new Camera();
+		m_camera = new Camera(SCR_WIDTH, SCR_HEIGHT);
 		//// Set camera transform (view transform)
-		m_camera->setPosition(glm::vec3(0.0f, 0.4f, 0.4f));
-		m_camera->setLookAt();
+		m_camera->setPosition(glm::vec3(0.0f, 10.0f, 10.0f));
+		//m_camera->setLookAt();
 
 		auto meshes = loadMeshes("../torus.obj");
 		m_meshes.push_back(meshes[0]);
@@ -241,25 +241,29 @@ public:
 		}
 	}
 
-	void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
+	void mouse_callback(GLFWwindow* window, float xposIn, float yposIn)
 	{
-		float xpos = static_cast<float>(xposIn);
-		float ypos = static_cast<float>(yposIn);;
+		/*float xpos = static_cast<float>(xposIn);
+		float ypos = static_cast<float>(yposIn);*/
+		
+
 
 		if (firstMouse)
 		{
-			lastX = xpos;
-			lastY = ypos;
+			lastX = xposIn;
+			lastY = yposIn;
 			firstMouse = false;
 		}
 
-		float xoffset = xpos - lastX;
-		float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
+		float xoffset = xposIn - lastX;
+		float yoffset = lastY - yposIn; // reversed since y-coordinates go from bottom to top
 
-		lastX = xpos;
-		lastY = ypos;
+		lastX = xposIn;
+		lastY = yposIn;
 
 		m_camera->ProcessMouseMovement(xoffset, yoffset);
+		printf("x: %f\n", xoffset);
+		printf("y: %f\n", yoffset);
 	}
 
 	void processInput(GLFWwindow *window, float deltaTime)
@@ -294,28 +298,30 @@ public:
 		glfwGetFramebufferSize(window, &width, &height);
 
 		// Setup the opengl wiewport (i.e specify area to draw)
-		glViewport(0, 0, width, height);
+		glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
 		checkGLError();
 		// Set color to be used when clearing the screen
-		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 		checkGLError();
 		// Clear the screen
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		checkGLError();
 		glm::vec3 lightPos = glm::vec3(0.0f, 1.0f, 0.0f);
 		
-			m_meshes[0]->render(m_shader, m_camera->getPosition(), m_camera->getModelMatrix(), m_camera->getProjectionMatrix(), m_textures[0]->getTextureId());
-			m_meshes[1]->render(m_shader, m_camera->getPosition(), m_camera->getModelMatrix(), m_camera->getProjectionMatrix(), m_textures[1]->getTextureId());
-			m_meshes[2]->render(m_shader, m_camera->getPosition(), m_camera->getModelMatrix(), m_camera->getProjectionMatrix(), m_textures[2]->getTextureId());
-			m_meshes[3]->render(m_shader, m_camera->getPosition(), m_camera->getModelMatrix(), m_camera->getProjectionMatrix(), m_textures[3]->getTextureId());
-			m_meshes[4]->render(m_shader, m_camera->getPosition(), m_camera->getModelMatrix(), m_camera->getProjectionMatrix(), m_textures[4]->getTextureId());
+			m_meshes[0]->render(m_shader, m_camera->getPosition(), m_camera->getviewmatrix(), m_camera->getProjectionMatrix(), m_textures[0]->getTextureId());
+			m_meshes[1]->render(m_shader, m_camera->getPosition(), m_camera->getviewmatrix(), m_camera->getProjectionMatrix(), m_textures[1]->getTextureId());
+			m_meshes[2]->render(m_shader, m_camera->getPosition(), m_camera->getviewmatrix(), m_camera->getProjectionMatrix(), m_textures[2]->getTextureId());
+			m_meshes[3]->render(m_shader, m_camera->getPosition(), m_camera->getviewmatrix(), m_camera->getProjectionMatrix(), m_textures[3]->getTextureId());
+			m_meshes[4]->render(m_shader, m_camera->getPosition(), m_camera->getviewmatrix(), m_camera->getProjectionMatrix(), m_textures[4]->getTextureId());
 		
 		
 	}
 
 	void update(float deltaTime) {
 		//m_teapot->setRotationZ(m_teapot->getRotationZ() + deltaTime);
-		
+		printf("x: %f\n", m_camera->getPosition().x);
+		printf("y: %f\n", m_camera->getPosition().y);
+		printf("z: %f\n", m_camera->getPosition().z);
 	}
 
 private:
@@ -358,7 +364,7 @@ int main(void) {
 	}
 
 	// Create window and check that creation was succesful.
-	GLFWwindow* window = glfwCreateWindow(720, 480, "OpenGL window", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "OpenGL window", NULL, NULL);
 	if (!window) {
 		glfwTerminate();
 		return -1;

@@ -5,9 +5,10 @@ GameObject::GameObject(const char* const functionName)
     : Object(functionName) {
     // Initialize transform
 	m_oritentation = glm::mat4(1.0f);
-    setPosition(glm::vec3(0.0));
-    setRotationy(0.0f);
-    setRotationx(0.0f);
+    m_position = glm::vec3(0);
+    m_angleInRadians = glm::vec3(0);
+    m_to = glm::vec3(0.0f, 0.0f, -1.0f);
+    m_up = glm::vec3(0.0f, 1.0f, 0.0f);
     setScaling(glm::vec3(1.0f));
 }
 
@@ -19,17 +20,17 @@ void GameObject::setPosition(const glm::vec3& position) {
 }
 
 void GameObject::setRotationy(const float angleInRadians) {
-   m_angleInRadians.y = angleInRadians;
+    m_oritentation += m_angleInRadians.y * angleInRadians;
 }
 
 void GameObject::setRotationx(const float angleInRadians)
 {
-   m_angleInRadians.x = angleInRadians;
+    m_oritentation += m_angleInRadians.x * angleInRadians;
 }
 
 void GameObject::setRotationz(const float angleInRadians)
 {
-   m_angleInRadians.z = angleInRadians;
+    m_oritentation += m_angleInRadians.z * angleInRadians;
 }
 
 
@@ -83,7 +84,7 @@ glm::mat4 GameObject::getModelMatrix() const {
     return glm::translate(glm::mat4(1.0f), m_position)
 			* m_oritentation
             * glm::rotate(m_angleInRadians.x, glm::vec3(1.0f, 0.0f, 0.0f))
-            * glm::rotate(m_angleInRadians.y, glm::vec3(0.0f, -1.0f, 0.0f))
+            * glm::rotate(m_angleInRadians.y, glm::vec3(0.0f, 1.0f, 0.0f))
             * glm::rotate(m_angleInRadians.z, glm::vec3(0.0f, 0.0f, 1.0f))
             * glm::scale(glm::mat4(1.0f), m_scale);
 }

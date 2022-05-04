@@ -22,7 +22,7 @@ public:
         scr_heigth = height;
         Yaw = -90.0f;
         Pitch = 0.0f;
-        Sensitivity = 0.015f;
+        Sensitivity = 0.5f;
         Speed = 1.0f;
         m_position = glm::vec3(0);
         worldup = glm::vec3(0.0f, 1.0f, 0.0f);

@@ -10,8 +10,8 @@ out vec3 fragPos;
 out vec3 viewPos;
 void main()
 {
-	texCoord = in_texCoord;\n
-	gl_Position = MVP * vec4(in_position.x, in_position.y, in_position.z, 1.0);\n
-	fragPos = vec3(M * vec4(in_position, 1.0));\n
-	normal = mat3(transpose(inverse(M))) * in_normal;\n
+	texCoord = in_texCoord;
+	gl_Position = MVP * vec4(in_position.x, in_position.y, in_position.z, 1.0);
+	fragPos = vec3(M * vec4(in_position, 1.0));
+	normal = mat3(transpose(inverse(M))) * in_normal;
 };

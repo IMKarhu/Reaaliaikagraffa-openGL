@@ -89,6 +89,11 @@ glm::mat4 GameObject::getModelMatrix() const {
             * glm::scale(glm::mat4(1.0f), m_scale);
 }
 
+glm::mat4 GameObject::getViewMatrix()
+{
+    return glm::lookAt(m_position, m_position + m_to, m_up);
+}
+
 void GameObject::setLookAt() {
 	m_oritentation = glm::inverse(glm::lookAtRH(m_position,m_position + m_to, m_up));
 }

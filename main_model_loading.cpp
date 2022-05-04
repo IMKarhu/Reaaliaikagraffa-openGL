@@ -115,71 +115,19 @@ public:
 	Application()
 		: Object(__FUNCTION__)
 		, m_shader(0) {
-		const char* vertexShaderSource =
-			"#version 330 core\n"
-			"layout (location = 0) in vec3 in_position;\n"
-			"layout (location = 1) in vec2 in_texCoord;\n"
-			"layout (location = 2) in vec3 in_normal;\n"
-			"uniform mat4 MVP;\n"
-			"uniform mat4 M;\n"
-			"out vec3 normal;"
-			"out vec2 texCoord;"
-			"out vec3 fragPos;"
-			"out vec3 viewPos;"
-			"void main()\n"
-			"{\n"
-			"   texCoord = in_texCoord;\n"
-			"   gl_Position = MVP * vec4(in_position.x, in_position.y, in_position.z, 1.0);\n"
-			"	fragPos = vec3(M * vec4(in_position, 1.0));\n"
-			"	normal = mat3(transpose(inverse(M))) * in_normal;\n"
-			"}";
-	
-		const char* fragmentShaderSource =
-			"#version 330 core\n"
-			"uniform sampler2D texture0;\n"
-			"uniform vec3 lightPos;\n"
-			"uniform vec3 viewPos;\n"
-
-			"in vec3 normal;"
-			"in vec2 texCoord;"
-			"in vec3 fragPos;\n"
-			"out vec4 FragColor;\n"
-
-			"void main()\n"
-			"{\n"
-			//ambient
-			"vec3 lightColor = vec3(1.0);\n"
-			"vec4 objectColor = texture2D(texture0, texCoord);\n"
-			"float ambientStrength = 0.1;\n"
-			"vec3 ambient = ambientStrength * lightColor;\n"
-			//diffuse
-			"vec3 lightDir = normalize(lightPos - fragPos);\n"
-			"vec3 norm = normalize(normal);\n"
-			"float diff = max(dot(norm, lightDir), 0.0);\n"
-			"vec3 diffuse = diff * lightColor;\n"
-			//specular
-			"float specularStrength = 0.8;\n"
-			"vec3 viewDir = normalize(viewPos - fragPos);\n"
-			"vec3 reflectDir = reflect(-lightDir, norm);\n"
-			"float spec = pow(max(dot(viewDir, reflectDir), 0.0), 64);\n"
-			"vec3 specular = specularStrength * spec * lightColor;\n"
-
-			"vec3 result = (ambient + diffuse) * objectColor.xyz + specular;\n"
-			"   FragColor = vec4(result, objectColor.w);\n"
-			"}";
 
 		// Build and compile our shader program
-		m_shader = new Shader(vertexShaderSource, fragmentShaderSource);
+		m_shader = new Shader("../vertexShader.vert", "../fragmentShader.frag");
 
 		// Create ortho-projective camera with screen size 640x480
 		m_camera = new Camera(SCR_WIDTH, SCR_HEIGHT);
 		//// Set camera transform (view transform)
-		m_camera->setPosition(glm::vec3(0.0f, 10.0f, 10.0f));
+		m_camera->setPosition(glm::vec3(0.0f, 5.0f, 5.0f));
 		//m_camera->setLookAt();
 
 		auto meshes = loadMeshes("../torus.obj");
 		m_meshes.push_back(meshes[0]);
-		m_meshes[0]->setScaling(glm::vec3(0.005f));
+		m_meshes[0]->setScaling(glm::vec3(0.010f));
 		m_meshes[0]->setPosition(glm::vec3(-0.5f, 0.0f, 0.0f));
 		meshes = loadMeshes("../torusknot.obj");
 		m_meshes.push_back(meshes[0]);
@@ -200,15 +148,15 @@ public:
 	
 		// Load the data for our texture using stb-image stbi_load-function
 		int width, height, nrChannels;
-		GLubyte* data = stbi_load("fabric_pattern_07_col_1_2k.png", &width, &height, &nrChannels, 0);
+		GLubyte* data = stbi_load("../fabric_pattern_07_col_1_2k.png", &width, &height, &nrChannels, 0);
 		m_textures.push_back(new Texture(width, height, nrChannels, data));
-		 data = stbi_load("Wood_table_1k.png", &width, &height, &nrChannels, 0);
+		 data = stbi_load("../Wood_table_1k.png", &width, &height, &nrChannels, 0);
 		 m_textures.push_back(new Texture(width, height, nrChannels, data));
-		 data = stbi_load("Wood_table_2k.png", &width, &height, &nrChannels, 0);
+		 data = stbi_load("../Wood_table_2k.png", &width, &height, &nrChannels, 0);
 		 m_textures.push_back(new Texture(width, height, nrChannels, data));
-		 data = stbi_load("red_bricks_04_diff_2k.png", &width, &height, &nrChannels, 0);
+		 data = stbi_load("../red_bricks_04_diff_2k.png", &width, &height, &nrChannels, 0);
 		 m_textures.push_back(new Texture(width, height, nrChannels, data));
-		 data = stbi_load("Ground.png", &width, &height, &nrChannels, 0);
+		 data = stbi_load("../Ground.png", &width, &height, &nrChannels, 0);
 		 m_textures.push_back(new Texture(width, height, nrChannels, data));
 		
 
@@ -289,6 +237,14 @@ public:
 			m_camera->processKeyboard(RIGHT, deltaTime);
 			printf("D pressed\n");
 		}
+		if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+		{
+			m_camera->processKeyboard(SPACE, deltaTime);
+		}
+		if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+		{
+			m_camera->processKeyboard(SHIFT, deltaTime);
+		}
 		
 	}
 
@@ -301,18 +257,18 @@ public:
 		glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
 		checkGLError();
 		// Set color to be used when clearing the screen
-		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		checkGLError();
 		// Clear the screen
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		checkGLError();
-		glm::vec3 lightPos = glm::vec3(0.0f, 1.0f, 0.0f);
+		//glm::vec3 lightPos = glm::vec3(0.0f, 1.0f, 0.0f);
 		
-			m_meshes[0]->render(m_shader, m_camera->getPosition(), m_camera->getviewmatrix(), m_camera->getProjectionMatrix(), m_textures[0]->getTextureId());
-			m_meshes[1]->render(m_shader, m_camera->getPosition(), m_camera->getviewmatrix(), m_camera->getProjectionMatrix(), m_textures[1]->getTextureId());
-			m_meshes[2]->render(m_shader, m_camera->getPosition(), m_camera->getviewmatrix(), m_camera->getProjectionMatrix(), m_textures[2]->getTextureId());
-			m_meshes[3]->render(m_shader, m_camera->getPosition(), m_camera->getviewmatrix(), m_camera->getProjectionMatrix(), m_textures[3]->getTextureId());
-			m_meshes[4]->render(m_shader, m_camera->getPosition(), m_camera->getviewmatrix(), m_camera->getProjectionMatrix(), m_textures[4]->getTextureId());
+			m_meshes[0]->render(m_shader, m_camera->getPosition(), m_camera->getViewMatrix(), m_camera->getProjectionMatrix(), m_textures[0]->getTextureId());
+			m_meshes[1]->render(m_shader, m_camera->getPosition(), m_camera->getViewMatrix(), m_camera->getProjectionMatrix(), m_textures[1]->getTextureId());
+			m_meshes[2]->render(m_shader, m_camera->getPosition(), m_camera->getViewMatrix(), m_camera->getProjectionMatrix(), m_textures[2]->getTextureId());
+			m_meshes[3]->render(m_shader, m_camera->getPosition(), m_camera->getViewMatrix(), m_camera->getProjectionMatrix(), m_textures[3]->getTextureId());
+			m_meshes[4]->render(m_shader, m_camera->getPosition(), m_camera->getViewMatrix(), m_camera->getProjectionMatrix(), m_textures[4]->getTextureId());
 		
 		
 	}

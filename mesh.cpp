@@ -52,6 +52,9 @@ void Mesh::render(Shader* shader, glm::vec3 viewPos, const glm::mat4& viewMatrix
 	// lightPos vector
 	shader->setUniform("viewPos", viewPos.x, viewPos.y, viewPos.z);
 
+	//view matrix
+	shader->setUniform("V", viewMatrix);
+
 	// Set texture, if set
 	if (textureId > 0) {
 		shader->setUniform("texture0", 0);

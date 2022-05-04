@@ -10,7 +10,7 @@
 
 class Shader : public kgfw::Object {
 public:
-	Shader(const char* vertexShaderPath, const char* fragmentShaderPath);
+	Shader(const char *vertexShaderPath, const char *fragmentShaderPath);
 	~Shader();
 
 	void bind();

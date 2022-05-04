@@ -25,6 +25,7 @@ public:
     glm::vec3& getWorldUp();
 
     glm::mat4 getModelMatrix() const;
+    glm::mat4 getViewMatrix();
 
 	void setLookAt();
     

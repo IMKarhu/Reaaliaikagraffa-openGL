@@ -7,7 +7,9 @@ enum Camera_Movement
     FORWARD,
     BACKWARD,
     LEFT,
-    RIGHT
+    RIGHT,
+    SPACE,
+    SHIFT
 };
 
  
@@ -22,8 +24,8 @@ public:
         scr_heigth = height;
         Yaw = -90.0f;
         Pitch = 0.0f;
-        Sensitivity = 0.5f;
-        Speed = 1.0f;
+        Sensitivity = 0.25f;
+        Speed = 2.0f;
         m_position = glm::vec3(0);
         worldup = glm::vec3(0.0f, 1.0f, 0.0f);
         Front = glm::vec3(0.0f, 0.0f, -1.0f);
@@ -35,10 +37,10 @@ public:
     ~Camera() {
 
     }
-    glm::mat4& getviewmatrix()
+    /*glm::mat4& getviewmatrix()
     {
        return glm::lookAt(m_position, m_position + Front, worldup);
-    }
+    }*/
     const glm::mat4& getProjectionMatrix() const {
         return m_projection;
     }
@@ -86,6 +88,14 @@ public:
             m_position -= velocity * glm::normalize(glm::cross(Front, worldup));
            // std::cout << "your position: " << position.y << std::endl;
         }
+        if (direction == SPACE)
+        {
+            m_position += worldup * velocity;
+        }
+        if (direction == SHIFT)
+        {
+            m_position -= worldup * velocity;
+        }
         setPosition(m_position);
     }
 
@@ -103,16 +113,17 @@ private:
     float scr_heigth;
     void updateCameravectors()
     {
-        //Front = getFront();
+        Front = getFront();
         glm::vec3 front;
         front.x = cos(glm::radians(Yaw)) * cos(glm::radians(Pitch));
         front.y = sin(glm::radians(Pitch));
         front.z = sin(glm::radians(Yaw)) * cos(glm::radians(Pitch));
         Front = glm::normalize(front);
 
-        setRotationx(glm::radians(Front.x));
-        setRotationy(glm::radians(Front.y));
-        setRotationz(glm::radians(Front.z));
+        setRotationx(glm::radians(getFront().x));
+        setRotationy(glm::radians(getFront().y));
+        setRotationz(glm::radians(getFront().z));
+        setFront(Front);
        // setFront(Front);
         // also re-calculate the Right and Up vector
         //Right = glm::normalize(glm::cross(getFront(), getWorldUp()));  // normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.

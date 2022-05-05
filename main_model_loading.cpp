@@ -141,7 +141,7 @@ public:
 		m_meshes.push_back(meshes[0]);
 		m_meshes[3]->setScaling(glm::vec3(0.03f));
 		m_meshes[3]->setPosition(glm::vec3(0.5f, 0.0f, -1.0f));
-		meshes = loadMeshes("../Cube.obj");
+		meshes = loadMeshes("../cube.obj");
 		m_meshes.push_back(meshes[0]);
 		m_meshes[4]->setScaling(glm::vec3(1.0f));
 		m_meshes[4]->setPosition(glm::vec3(0.0f, -1.0f, 0.0f));

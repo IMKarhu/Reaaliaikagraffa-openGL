@@ -24,11 +24,11 @@ include_directories("ext/stb-master")
 set(GLAD_GL "${GLFW_SOURCE_DIR}/deps/glad/gl.h" "${GLFW_SOURCE_DIR}/deps/glad_gl.c")
 
 # add the executables
-add_executable(simple_teapot main_simple_teapot.cpp shader.h shader.cpp gameobject.h gameobject.cpp camera.h texture.h texture.cpp teapot.h teapot.cpp teapot_data.h ${GLAD_GL})
-add_executable(projection main_projection.cpp shader.h shader.cpp gameobject.h gameobject.cpp camera.h texture.h texture.cpp teapot.h teapot.cpp teapot_data.h ${GLAD_GL})
-add_executable(lightning main_lightning.cpp shader.h shader.cpp gameobject.h gameobject.cpp camera.h texture.h texture.cpp teapot.h teapot.cpp teapot_data.h ${GLAD_GL})
-add_executable( model_loading main_model_loading.cpp mesh.cpp mesh.h shader.h shader.cpp gameobject.h gameobject.cpp camera.h texture.h texture.cpp teapot.h teapot.cpp teapot_data.h ${GLAD_GL})
-add_executable( practical_work main_model_loading.cpp mesh.cpp mesh.h shader.h shader.cpp gameobject.h gameobject.cpp camera.h texture.h texture.cpp teapot.h teapot.cpp teapot_data.h ${GLAD_GL})
+add_executable(simple_teapot src/main_simple_teapot.cpp src/shader.h src/shader.cpp src/gameobject.h src/gameobject.cpp src/camera.h src/texture.h src/texture.cpp src/teapot.h src/teapot.cpp src/teapot_data.h ${GLAD_GL})
+add_executable(projection src/main_projection.cpp src/shader.h src/shader.cpp src/gameobject.h src/gameobject.cpp src/camera.h src/texture.h src/texture.cpp src/teapot.h src/teapot.cpp src/teapot_data.h ${GLAD_GL})
+add_executable(lightning src/main_lightning.cpp src/shader.h src/shader.cpp src/gameobject.h src/gameobject.cpp src/camera.h src/texture.h src/texture.cpp src/teapot.h src/teapot.cpp src/teapot_data.h ${GLAD_GL})
+add_executable( model_loading src/main_model_loading.cpp src/mesh.cpp src/mesh.h src/shader.h src/shader.cpp src/gameobject.h src/gameobject.cpp src/camera.h src/texture.h src/texture.cpp teapot.h src/teapot.cpp src/teapot_data.h ${GLAD_GL})
+add_executable( practical_work src/main_model_loading.cpp src/mesh.cpp src/mesh.h src/shader.h src/shader.cpp src/gameobject.h src/gameobject.cpp src/camera.h src/texture.h src/texture.cpp src/teapot.h src/teapot.cpp src/teapot_data.h ${GLAD_GL})
 # Link game_object-executables with needed libraries. Since the kgfw and glfw libraries 
 # has public include directories we will use those link directories when building binaries.
 target_link_libraries(simple_teapot PUBLIC kgfw PUBLIC glfw PUBLIC glm)
